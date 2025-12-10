@@ -9,10 +9,13 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../global.css";
 import { NAV_THEME } from "@/lib/constants";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useColorScheme } from "@/lib/use-color-scheme";
 import { Platform } from "react-native";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase";
+import { initDb } from "@/db/database";
 
 const LIGHT_THEME: Theme = {
 	...DefaultTheme,
@@ -28,39 +31,37 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-	const hasMounted = useRef(false);
-	const { colorScheme, isDarkColorScheme } = useColorScheme();
-	const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+	// const hasMounted = useRef(false);
+	// const { colorScheme, isDarkColorScheme } = useColorScheme();
+	// const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+	// useIsomorphicLayoutEffect(() => {
+	// 	if (hasMounted.current) {
+	// 		return;
+	// 	}
+	// 	if (Platform.OS === "web") {
+	// 		document.documentElement.classList.add("bg-background");
+	// 	}
+	// 	setAndroidNavigationBar(colorScheme);
+	// 	setIsColorSchemeLoaded(true);
+	// 	hasMounted.current = true;
+	// }, []);
 
-	useIsomorphicLayoutEffect(() => {
-		if (hasMounted.current) {
-			return;
-		}
-
-		if (Platform.OS === "web") {
-			document.documentElement.classList.add("bg-background");
-		}
-		setAndroidNavigationBar(colorScheme);
-		setIsColorSchemeLoaded(true);
-		hasMounted.current = true;
+	// if (!isColorSchemeLoaded) {
+	// 	return null;
+	// }
+	useEffect(() => {
+		initDb();
 	}, []);
-
-	if (!isColorSchemeLoaded) {
-		return null;
-	}
 	return (
-		<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-			<StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-			<GestureHandlerRootView style={{ flex: 1 }}>
-				<Stack>
-					<Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-					<Stack.Screen
-						name="modal"
-						options={{ title: "Modal", presentation: "modal" }}
-					/>
-				</Stack>
-			</GestureHandlerRootView>
-		</ThemeProvider>
+		// <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+		// <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<Stack >
+				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+				<Stack.Screen name="courses/[courseId]/index" options={{ headerShown: false }} />
+			</Stack>
+		</GestureHandlerRootView>
+		// </ThemeProvider>
 	);
 }
 
