@@ -58,7 +58,8 @@ export default function RootLayout() {
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<Stack >
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				<Stack.Screen name="courses/[courseId]/index" options={{ headerShown: false }} />
+				<Stack.Screen name="courses/[courseId]/index" options={{ headerShown: true, title: "Course Details" }} />
+				<Stack.Screen name="courses/add-course" options={{ headerShown: true, title: "Add New Course" }} />
 			</Stack>
 		</GestureHandlerRootView>
 		// </ThemeProvider>

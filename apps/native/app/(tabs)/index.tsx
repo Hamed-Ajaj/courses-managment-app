@@ -4,6 +4,7 @@ import { Feather } from "@expo/vector-icons"
 import { useCallback, useEffect, useState } from "react"
 import { Link, useFocusEffect } from "expo-router"
 import { Course, getAllCourses, addCourse, deleteCourse, CourseStatus } from "@/db/courses"
+import { formatUrl, getStatusStyle } from "@/lib/utils"
 
 export default function HomeScreen() {
   const [courses, setCourses] = useState<Course[]>([])
@@ -35,21 +36,6 @@ export default function HomeScreen() {
     }, [])
   )
 
-  const handleAddRandomCourse = async () => {
-    const titles = ["Learn React Native", "Mastering TypeScript", "Docker Essentials", "System Design 101"]
-    const statuses: CourseStatus[] = ["not-started", "in-progress", "completed"]
-
-    const randomTitle = titles[Math.floor(Math.random() * titles.length)]
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
-
-    await addCourse(
-      randomTitle,
-      "https://example.com/course",
-      "Randomly generated course for demo",
-      randomStatus
-    )
-    fetchData()
-  }
 
   const handleDelete = async (id: number) => {
     await deleteCourse(id)
@@ -61,23 +47,20 @@ export default function HomeScreen() {
     (c.link && c.link.toLowerCase().includes(search.toLowerCase()))
   )
 
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'completed': return { bg: 'bg-emerald-100 dark:bg-emerald-900/50', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' };
-      case 'in-progress': return { bg: 'bg-blue-100 dark:bg-blue-900/50', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' };
-      case 'not-started': return { bg: 'bg-slate-100 dark:bg-slate-800/50', text: 'text-slate-600 dark:text-slate-400', border: 'border-slate-200 dark:border-slate-700' };
-      default: return { bg: 'bg-slate-100', text: 'text-slate-700', border: 'border-slate-200' };
-    }
-  }
 
-  const formatUrl = (url?: string) => {
-    if (!url) return '';
-    return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-background">
+        <Text className="text-muted-foreground">Loading...</Text>
+      </View>
+    )
   }
 
   const renderCard = ({ item }: { item: Course }) => {
     const statusStyle = getStatusStyle(item.status);
-
+    const iconColor = isDark ? '#000' : '#64748b'; // slate-400 / slate-500
     return (
       <View className="bg-card p-4 rounded-2xl mb-3 border border-border shadow-sm">
         <View className="flex-row justify-between items-start mb-3">
@@ -116,14 +99,6 @@ export default function HomeScreen() {
       </View>
     )
   };
-
-  if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-background">
-        <Text className="text-muted-foreground">Loading...</Text>
-      </View>
-    )
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
@@ -174,14 +149,17 @@ export default function HomeScreen() {
 
       {/* Floating Add Button Area */}
       <View className="absolute bottom-6 left-0 right-0 items-center px-4">
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={handleAddRandomCourse}
-          className="bg-primary w-full py-4 rounded-2xl bg-slate-900 dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none flex-row justify-center items-center"
-        >
-          <Feather name="plus" size={20} color={isDark ? '#fff' : '#000'} style={{ marginRight: 8 }} />
-          <Text className="text-primary-foreground dark:text-black font-bold text-lg">Add New Course</Text>
-        </TouchableOpacity>
+        <Link href="/courses/add-course" asChild>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            // onPress={handleAddRandomCourse}
+            className="bg-primary w-full py-4 rounded-2xl bg-slate-900 dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none flex-row justify-center items-center"
+          >
+            <Feather name="plus" size={20} color={isDark ? '#fff' : '#000'} style={{ marginRight: 8 }} />
+            <Text className="text-primary-foreground dark:text-black font-bold text-lg">Add New Course</Text>
+          </TouchableOpacity>
+        </Link>
+
       </View>
     </SafeAreaView>
   )
