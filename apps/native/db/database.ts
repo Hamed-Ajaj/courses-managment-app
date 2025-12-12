@@ -14,7 +14,8 @@ export const initDb = async () => {
     CREATE TABLE IF NOT EXISTS categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      color TEXT DEFAULT '#3b82f6' -- blue default
+      color TEXT DEFAULT '#3b82f6', -- blue default
+      icon TEXT DEFAULT 'grid'
     );
 
     CREATE TABLE IF NOT EXISTS courses (
@@ -35,6 +36,13 @@ export const initDb = async () => {
       UNIQUE (course_id, category_id)
     );
   `);
+
+  // Migration for existing tables
+  try {
+    await (await db).execAsync("ALTER TABLE categories ADD COLUMN icon TEXT DEFAULT 'grid'");
+  } catch (e) {
+    // Column likely already exists
+  }
 
   console.log("✅ Database initialized");
 };

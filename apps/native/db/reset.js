@@ -36,37 +36,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initDb = exports.db = void 0;
-// db/database.ts
-var SQLite = require("expo-sqlite");
-exports.db = SQLite.openDatabaseAsync('courses.db');
-// Initialize DB tables
-var initDb = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var e_1;
+exports.deleteAll = void 0;
+// db/reset.ts
+var database_1 = require("./database");
+var deleteAll = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var database;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.db];
-            case 1: 
-            // TODO: add tags table and course_tags table
-            return [4 /*yield*/, (_a.sent()).execAsync("\n    PRAGMA foreign_keys = ON;\n\n    CREATE TABLE IF NOT EXISTS categories (\n      id INTEGER PRIMARY KEY AUTOINCREMENT,\n      name TEXT NOT NULL,\n      color TEXT DEFAULT '#3b82f6', -- blue default\n      icon TEXT DEFAULT 'grid'\n    );\n\n    CREATE TABLE IF NOT EXISTS courses (\n      id INTEGER PRIMARY KEY AUTOINCREMENT,\n      title TEXT NOT NULL,\n      link TEXT,\n      description TEXT,\n      status TEXT DEFAULT 'not-started',\n      created_at TEXT DEFAULT CURRENT_TIMESTAMP\n    );\n\n    -- Many-to-many relationship\n    CREATE TABLE IF NOT EXISTS course_categories (\n      course_id INTEGER NOT NULL,\n      category_id INTEGER NOT NULL,\n      FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE,\n      FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE,\n      UNIQUE (course_id, category_id)\n    );\n  ")];
+            case 0: return [4 /*yield*/, database_1.db];
+            case 1:
+                database = _a.sent();
+                return [4 /*yield*/, database.execAsync("\n    DELETE FROM course_categories;\n    DELETE FROM courses;\n    DELETE FROM categories;\n    VACUUM;\n  ")];
             case 2:
-                // TODO: add tags table and course_tags table
                 _a.sent();
-                _a.label = 3;
-            case 3:
-                _a.trys.push([3, 6, , 7]);
-                return [4 /*yield*/, exports.db];
-            case 4: return [4 /*yield*/, (_a.sent()).execAsync("ALTER TABLE categories ADD COLUMN icon TEXT DEFAULT 'grid'")];
-            case 5:
-                _a.sent();
-                return [3 /*break*/, 7];
-            case 6:
-                e_1 = _a.sent();
-                return [3 /*break*/, 7];
-            case 7:
-                console.log("✅ Database initialized");
+                console.log("🗑️ All data deleted (tables preserved)");
                 return [2 /*return*/];
         }
     });
 }); };
-exports.initDb = initDb;
+exports.deleteAll = deleteAll;
