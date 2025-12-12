@@ -39,6 +39,37 @@ export default function AuthScreen() {
         password: z.string().min(6, "Password must be at least 6 characters"),
     });
 
+    const signIn = async (email: string, password: string) => {
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+            if (error) throw error;
+            setLoading(false);
+        }
+        catch (error: any) {
+            Alert.alert("Error", error.message);
+            setLoading(false);
+        }
+    }
+
+    const signUp = async (email: string, password: string) => {
+        try {
+            const { error } = await supabase.auth.signUp({
+                email,
+                password,
+            });
+            if (error) throw error;
+            // Alert.alert("Success", "Please check your inbox for email verification!");
+            setLoading(false);
+        }
+        catch (error: any) {
+            Alert.alert("Error", error.message);
+            setLoading(false);
+        }
+    }
+
     const form = useForm({
         defaultValues: {
             email: "",
@@ -53,21 +84,9 @@ export default function AuthScreen() {
             const { email, password } = value;
             try {
                 if (isSignUp) {
-                    const { error } = await supabase.auth.signUp({
-                        email,
-                        password,
-                    });
-                    if (error) throw error;
-                    // Alert.alert("Success", "Please check your inbox for email verification!");
-                    setLoading(false);
+                    await signUp(email, password);
                 } else {
-                    const { error } = await supabase.auth.signInWithPassword({
-                        email,
-                        password,
-                    });
-                    if (error) throw error;
-                    setLoading(false);
-                    // Router replace is handled by onAuthStateChange
+                    signIn(email, password)
                 }
             } catch (error: any) {
                 Alert.alert("Error", error.message);
