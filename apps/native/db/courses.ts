@@ -17,7 +17,7 @@ export const getAllCourses = async (): Promise<Course[]> => {
   return (await db).getAllAsync<Course>('SELECT * FROM courses ORDER BY created_at DESC');
 };
 
-export const getCourseById = async (id: number): Promise<Course| null>  => {
+export const getCourseById = async (id: number): Promise<Course | null> => {
   return (await db).getFirstAsync<Course>('SELECT * FROM courses WHERE id = ?', [id]);
 };
 
@@ -33,6 +33,13 @@ export const addCourse = async (
   );
   return (await result).lastInsertRowId!;
 };
+
+export const addCategoryCourse = async (courseId: number, categoryId: number) => {
+  const result = (await db).runAsync(
+    'INSERT INTO course_category (course_id, category_id) VALUES (?, ?)',
+    [courseId, categoryId]
+  );
+}
 
 export const updateCourseStatus = async (id: number, status: CourseStatus) => {
   (await db).runAsync('UPDATE courses SET status = ? WHERE id = ?', [status, id]);

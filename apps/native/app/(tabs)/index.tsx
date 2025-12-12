@@ -1,17 +1,28 @@
-import { View, Text, TextInput, FlatList, TouchableOpacity, useColorScheme, Platform } from "react-native"
+import { View, Text, TextInput, FlatList, TouchableOpacity, Platform } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Feather } from "@expo/vector-icons"
 import { useCallback, useEffect, useState } from "react"
-import { Link, useFocusEffect } from "expo-router"
+import { Link, useFocusEffect, useRouter } from "expo-router"
+import { supabase } from "@/utils/supabase"
 import { Course, getAllCourses, addCourse, deleteCourse, CourseStatus } from "@/db/courses"
 import { formatUrl, getStatusStyle } from "@/lib/utils"
+import { useColorScheme } from "@/lib/use-color-scheme"
 
 export default function HomeScreen() {
   const [courses, setCourses] = useState<Course[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState<boolean>(true)
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.replace("/auth");
+      }
+    });
+  }, []);
 
   // Colors
   const iconColor = isDark ? '#000' : '#64748b'; // slate-400 / slate-500

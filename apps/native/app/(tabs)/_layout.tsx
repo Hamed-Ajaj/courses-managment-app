@@ -1,9 +1,9 @@
 import { Tabs } from "expo-router";
-import { useColorScheme } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useColorScheme } from "@/lib/use-color-scheme";
 
 export default function TabsLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   return (

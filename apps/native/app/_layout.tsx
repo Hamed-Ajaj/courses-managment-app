@@ -16,6 +16,7 @@ import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/utils/supabase";
 import { initDb } from "@/db/database";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const LIGHT_THEME: Theme = {
 	...DefaultTheme,
@@ -52,16 +53,21 @@ export default function RootLayout() {
 	useEffect(() => {
 		initDb();
 	}, []);
+	const queryClient = new QueryClient();
 	return (
 		// <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
 		// <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-		<GestureHandlerRootView style={{ flex: 1 }}>
-			<Stack >
-				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				<Stack.Screen name="courses/[courseId]/index" options={{ headerShown: true, title: "Course Details" }} />
-				<Stack.Screen name="courses/add-course" options={{ headerShown: true, title: "Add New Course" }} />
-			</Stack>
-		</GestureHandlerRootView>
+		<QueryClientProvider client={queryClient}>
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<Stack >
+					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					<Stack.Screen name="auth" options={{ headerShown: false }} />
+					<Stack.Screen name="courses/[courseId]/index" options={{ headerShown: true, title: "Course Details" }} />
+					<Stack.Screen name="courses/add-course" options={{ headerShown: true, title: "Add New Course" }} />
+					<Stack.Screen name="categories/add-category" options={{ headerShown: true, title: "Add New Category" }} />
+				</Stack>
+			</GestureHandlerRootView>
+		</QueryClientProvider>
 		// </ThemeProvider>
 	);
 }

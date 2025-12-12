@@ -1,25 +1,27 @@
-import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView, useColorScheme } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useForm } from "@tanstack/react-form";
 import { SafeAreaView } from "react-native-safe-area-context"
 import { z } from "zod";
 import { Feather } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import { addCourse } from "@/db/courses";
+import { addCategoryCourse, addCourse } from "@/db/courses";
 import RNPickerSelect from 'react-native-picker-select';
 import { useCallback, useState } from "react";
 import { getAllCategories } from "@/db/categories";
 import { Category } from "@/db/categories";
+import { useColorScheme } from "@/lib/use-color-scheme";
 
 const AddCourse = () => {
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const router = useRouter();
-    const colorScheme = useColorScheme();
+    const { colorScheme } = useColorScheme();
     const isDark = colorScheme === 'dark';
     const fetchData = async () => {
         try {
             setLoading(true)
             const data = await getAllCategories()
+            console.log(data)
             setCategories(data)
         } catch (e) {
             console.error(e)
@@ -58,7 +60,12 @@ const AddCourse = () => {
         },
         onSubmit: async ({ value }) => {
             try {
-                await addCourse(value.title, value.link, value.description, value.status);
+                const course = await addCourse(value.title, value.link, value.description, value.status);
+
+                if (!course) {
+                    throw new Error("Failed to add course");
+                }
+
                 router.replace("/");
             } catch (error) {
                 console.log(error);
@@ -161,11 +168,10 @@ const AddCourse = () => {
                                             <RNPickerSelect
                                                 onValueChange={field.handleChange}
                                                 value={field.state.value}
-                                                items={[
-                                                    { label: "Front end", value: "frontend" },
-                                                    { label: "Back end", value: "backend" },
-                                                    { label: "Full stack", value: "fullstack" },
-                                                ]}
+                                                items={categories.map((category) => ({
+                                                    label: category.name,
+                                                    value: category.id,
+                                                }))}
                                                 style={{
                                                     inputIOS: {
                                                         fontSize: 16,
@@ -218,7 +224,7 @@ const AddCourse = () => {
                                     onPress={form.handleSubmit}
                                     className={`w-full py-4 rounded-2xl flex-row justify-center items-center ${!canSubmit
                                         ? 'bg-slate-200 dark:bg-slate-800 opacity-50 shadow-none'
-                                        : 'bg-primary bg-slate-900 dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none'
+                                        : 'bg-primary dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none'
                                         }`}
                                 >
                                     {isSubmitting ? (
