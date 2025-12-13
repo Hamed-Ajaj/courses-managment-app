@@ -58,3 +58,13 @@ export const getCoursesByCategory = async (categoryId: number): Promise<Course[]
     [categoryId]
   );
 };
+
+export const getCourseByCategoryCount = async (categoryId: number): Promise<number> => {
+  const result = await (await db).getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) as count FROM courses 
+     JOIN course_categories ON courses.id = course_categories.course_id 
+     WHERE course_categories.category_id = ?`,
+    [categoryId]
+  );
+  return result?.count ?? 0;
+};

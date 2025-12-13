@@ -3,10 +3,18 @@ import { Feather } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { useColorScheme } from "@/lib/use-color-scheme";
+import { useQuery } from "@tanstack/react-query";
+import { getCourseByCategoryCount } from "@/db/courses";
 
 const CategoryCard = ({ item }: { item: Category }) => {
     const { colorScheme } = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const { data: courseCount } = useQuery({
+        queryKey: ['courses', item.id],
+        queryFn: () => getCourseByCategoryCount(item.id),
+    })
+
+    console.log(courseCount)
 
     return (
         <TouchableOpacity
@@ -38,7 +46,7 @@ const CategoryCard = ({ item }: { item: Category }) => {
             <View>
                 <Text className="text-lg font-bold text-foreground mb-1" numberOfLines={1}>{item.name}</Text>
                 <View className="flex-row items-center">
-                    <Text className="text-xs text-muted-foreground mr-1">0 Courses</Text>
+                    <Text className="text-xs text-muted-foreground mr-1">{courseCount} Courses</Text>
                 </View>
             </View>
         </TouchableOpacity>
