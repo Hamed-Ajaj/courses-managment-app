@@ -8,6 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { useCallback } from "react";
 import { useColorScheme } from "@/lib/use-color-scheme";
 import CategoryCard from "@/components/category-card";
+import { getCoursesByCategory } from "@/db/courses";
 
 const CategoriesScreen = () => {
   const router = useRouter();
@@ -19,6 +20,14 @@ const CategoriesScreen = () => {
     queryFn: getAllCategories,
   });
 
+  const { data: courseByCategory, isLoading: isCourseByCategoryLoading
+  } = useQuery({
+    queryKey: ['courses', categories?.[1]?.id],
+    queryFn: () => getCoursesByCategory(categories?.[1]?.id!),
+  });
+  if (!isCourseByCategoryLoading) {
+    console.log(courseByCategory)
+  }
   useFocusEffect(
     useCallback(() => {
       refetch();

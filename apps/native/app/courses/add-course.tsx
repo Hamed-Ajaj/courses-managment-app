@@ -44,7 +44,7 @@ const AddCourse = () => {
         link: z.string().url("Must be a valid URL (e.g., https://example.com)"),
         description: z.string().min(10, "Description must be at least 10 characters long"),
         status: z.enum(["not-started", "in-progress", "completed"]),
-        category: z.string()
+        category: z.number().describe("Select a category"),
     })
 
     const form = useForm({
@@ -52,7 +52,7 @@ const AddCourse = () => {
             title: '',
             link: '',
             description: '',
-            category: 'frontend',
+            category: undefined as unknown as number,
             status: 'not-started' as "not-started" | "in-progress" | "completed",
         },
         validators: {
@@ -60,9 +60,13 @@ const AddCourse = () => {
         },
         onSubmit: async ({ value }) => {
             try {
-                const course = await addCourse(value.title, value.link, value.description, value.status);
+                const courseId = await addCourse(value.title, value.link, value.description, value.status);
 
-                if (!course) {
+                if (value.category) {
+                    await addCategoryCourse(courseId, value.category);
+                }
+
+                if (!courseId) {
                     throw new Error("Failed to add course");
                 }
 

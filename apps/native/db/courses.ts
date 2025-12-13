@@ -36,7 +36,7 @@ export const addCourse = async (
 
 export const addCategoryCourse = async (courseId: number, categoryId: number) => {
   const result = (await db).runAsync(
-    'INSERT INTO course_category (course_id, category_id) VALUES (?, ?)',
+    'INSERT INTO course_categories (course_id, category_id) VALUES (?, ?)',
     [courseId, categoryId]
   );
 }
@@ -47,4 +47,14 @@ export const updateCourseStatus = async (id: number, status: CourseStatus) => {
 
 export const deleteCourse = async (id: number) => {
   (await db).runAsync('DELETE FROM courses WHERE id = ?', [id]);
+};
+
+export const getCoursesByCategory = async (categoryId: number): Promise<Course[]> => {
+  return (await db).getAllAsync<Course>(
+    `SELECT courses.* FROM courses 
+     JOIN course_categories ON courses.id = course_categories.course_id 
+     WHERE course_categories.category_id = ?
+     ORDER BY courses.created_at DESC`,
+    [categoryId]
+  );
 };
