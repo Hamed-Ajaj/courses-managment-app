@@ -5,16 +5,16 @@ import { TouchableOpacity } from "react-native";
 import { useColorScheme } from "@/lib/use-color-scheme";
 import { useQuery } from "@tanstack/react-query";
 import { getCourseByCategoryCount } from "@/db/courses";
+import { Link, useRouter } from "expo-router";
 
 const CategoryCard = ({ item }: { item: Category }) => {
     const { colorScheme } = useColorScheme();
+    const router = useRouter()
     const isDark = colorScheme === 'dark';
     const { data: courseCount } = useQuery({
         queryKey: ['courses', item.id],
         queryFn: () => getCourseByCategoryCount(item.id),
     })
-
-    console.log(courseCount)
 
     return (
         <TouchableOpacity
@@ -30,6 +30,7 @@ const CategoryCard = ({ item }: { item: Category }) => {
                 shadowRadius: 1.00,
                 elevation: 1,
             }}
+            onPress={() => router.push(`/category/${item.id}`)}
         >
             <View className="flex-row justify-between items-start">
                 <View

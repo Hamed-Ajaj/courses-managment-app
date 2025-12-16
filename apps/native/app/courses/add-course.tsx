@@ -3,79 +3,59 @@ import { useForm } from "@tanstack/react-form";
 import { SafeAreaView } from "react-native-safe-area-context"
 import { z } from "zod";
 import { Feather } from "@expo/vector-icons";
-import { useFocusEffect, useRouter } from "expo-router";
-import { addCategoryCourse, addCourse } from "@/db/courses";
+import { useRouter } from "expo-router";
 import RNPickerSelect from 'react-native-picker-select';
-import { useCallback, useState } from "react";
-import { getAllCategories } from "@/db/categories";
-import { Category } from "@/db/categories";
 import { useColorScheme } from "@/lib/use-color-scheme";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCategories } from "@/lib/api/courses.api";
+import { useAddCourse } from "@/lib/query/courses.query";
+
+const addCourseSchema = z.object({
+    title: z.string().min(3, "Title must be at least 3 characters long"),
+    link: z.string().url("Must be a valid URL (e.g., https://example.com)"),
+    description: z.string().min(10, "Description must be at least 10 characters long"),
+    status: z.enum(["not-started", "in-progress", "completed"]),
+    category: z.number().describe("Select a category"),
+})
 
 const AddCourse = () => {
-    const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const { data: categories, isLoading, isError, error } = useQuery({
+        queryKey: ['categories'],
+        queryFn: fetchCategories,
+        staleTime: Infinity,
+    })
+    const { mutate: addCourse, isPending, error: addCourseError, isError: addCourseIsError } = useAddCourse()
     const router = useRouter();
     const { colorScheme } = useColorScheme();
     const isDark = colorScheme === 'dark';
-    const fetchData = async () => {
-        try {
-            setLoading(true)
-            const data = await getAllCategories()
-            console.log(data)
-            setCategories(data)
-        } catch (e) {
-            console.error(e)
-            setLoading(false)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchData()
-        }, [])
-    )
-
-    console.log(categories)
-
-    const addCourseSchema = z.object({
-        title: z.string().min(3, "Title must be at least 3 characters long"),
-        link: z.string().url("Must be a valid URL (e.g., https://example.com)"),
-        description: z.string().min(10, "Description must be at least 10 characters long"),
-        status: z.enum(["not-started", "in-progress", "completed"]),
-        category: z.number().describe("Select a category"),
-    })
 
     const form = useForm({
         defaultValues: {
             title: '',
             link: '',
             description: '',
-            category: undefined as unknown as number,
+            category: 0,
             status: 'not-started' as "not-started" | "in-progress" | "completed",
         },
         validators: {
             onChange: addCourseSchema
         },
-        onSubmit: async ({ value }) => {
-            try {
-                const courseId = await addCourse(value.title, value.link, value.description, value.status);
-
-                if (value.category) {
-                    await addCategoryCourse(courseId, value.category);
-                }
-
-                if (!courseId) {
-                    throw new Error("Failed to add course");
-                }
-
-                router.replace("/");
-            } catch (error) {
-                console.log(error);
+        onSubmit: ({ value }) => {
+            addCourse(value);
+            router.replace("/");
+            if (addCourseIsError) {
+                console.log(addCourseError);
             }
-        },
+        }
     })
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 justify-center items-center bg-background">
+                <Text className="text-muted-foreground">Loading...</Text>
+            </View>
+        )
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-background" edges={['top']}>
@@ -172,7 +152,7 @@ const AddCourse = () => {
                                             <RNPickerSelect
                                                 onValueChange={field.handleChange}
                                                 value={field.state.value}
-                                                items={categories.map((category) => ({
+                                                items={categories?.map((category) => ({
                                                     label: category.name,
                                                     value: category.id,
                                                 }))}
@@ -231,7 +211,7 @@ const AddCourse = () => {
                                         : 'bg-primary dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none'
                                         }`}
                                 >
-                                    {isSubmitting ? (
+                                    {isPending ? (
                                         <Text className={`font-bold text-lg ${!canSubmit ? 'text-slate-400 dark:text-slate-500' : 'text-primary-foreground dark:text-black'}`}>
                                             Creating...
                                         </Text>

@@ -49,6 +49,10 @@ export const deleteCourse = async (id: number) => {
   (await db).runAsync('DELETE FROM courses WHERE id = ?', [id]);
 };
 
+export const deleteCategoryCourse = async (courseId: number, categoryId: number) => {
+  (await db).runAsync('DELETE FROM course_categories WHERE course_id = ? AND category_id = ?', [courseId, categoryId]);
+}
+
 export const getCoursesByCategory = async (categoryId: number): Promise<Course[]> => {
   return (await db).getAllAsync<Course>(
     `SELECT courses.* FROM courses 

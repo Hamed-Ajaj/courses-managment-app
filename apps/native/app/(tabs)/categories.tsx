@@ -20,21 +20,6 @@ const CategoriesScreen = () => {
     queryFn: getAllCategories,
   });
 
-  const { data: courseByCategory, isLoading: isCourseByCategoryLoading
-  } = useQuery({
-    queryKey: ['courses', categories?.[1]?.id],
-    queryFn: () => getCoursesByCategory(categories?.[1]?.id!),
-  });
-  if (!isCourseByCategoryLoading) {
-    console.log(courseByCategory)
-  }
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [])
-  );
-
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <View className="flex-1 px-3 pt-2">
@@ -76,10 +61,10 @@ const CategoriesScreen = () => {
       <View className="absolute bottom-6 left-0 right-0 items-center px-4">
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push('/categories/add-category')}
-          className="bg-primary w-full py-4 rounded-2xl bg-slate-900 dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none flex-row justify-center items-center"
+          onPress={() => router.push('/category/add-category')}
+          className="bg-primary w-full py-4 rounded-2xl  dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none flex-row justify-center items-center"
         >
-          <Feather name="plus" size={20} color={isDark ? '#000' : '#fff'} style={{ marginRight: 8 }} />
+          <Feather name="plus" size={20} color={isDark ? '#fff' : '#000'} style={{ marginRight: 8 }} />
           <Text className="text-primary-foreground dark:text-black font-bold text-lg">Add New Category</Text>
         </TouchableOpacity>
       </View>

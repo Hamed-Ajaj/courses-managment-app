@@ -5,8 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { z } from "zod";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { addCategory } from "@/db/categories";
 import { useColorScheme } from "@/lib/use-color-scheme";
+import { useAddCategory } from "@/lib/query/courses.query";
 
 const COLORS = [
     "#3b82f6", // Blue
@@ -43,6 +43,7 @@ const AddCategory = () => {
     const router = useRouter();
     const { colorScheme } = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const { mutateAsync: createCategory, isPending, isSuccess } = useAddCategory();
 
     const addCategorySchema = z.object({
         name: z.string().min(2, "Name must be at least 2 characters long"),
@@ -60,12 +61,8 @@ const AddCategory = () => {
             onChange: addCategorySchema
         },
         onSubmit: async ({ value }) => {
-            try {
-                await addCategory(value.name, value.color, value.icon);
-                router.back();
-            } catch (error) {
-                console.error(error);
-            }
+            await createCategory(value);
+            router.back();
         },
     });
 
@@ -76,12 +73,6 @@ const AddCategory = () => {
                 className="flex-1"
             >
                 <View className="flex-1 px-5 pt-2">
-                    {/* <View className="flex-row items-center mb-8 mt-2">
-                        <TouchableOpacity onPress={() => router.back()} className="mr-4">
-                            <Feather name="arrow-left" size={24} color={isDark ? "white" : "black"} />
-                        </TouchableOpacity>
-                        <Text className="text-3xl font-extrabold text-foreground tracking-tight">Add Category</Text>
-                    </View> */}
 
                     <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
                         <View className="space-y-6">
