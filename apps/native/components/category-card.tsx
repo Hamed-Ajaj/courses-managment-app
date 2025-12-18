@@ -6,15 +6,38 @@ import { useColorScheme } from "@/lib/use-color-scheme";
 import { useQuery } from "@tanstack/react-query";
 import { getCourseByCategoryCount } from "@/db/courses";
 import { Link, useRouter } from "expo-router";
+import { useDeleteCategory } from "@/lib/query/categories.query";
+import { Alert } from "react-native";
+import { useState } from "react";
 
 const CategoryCard = ({ item }: { item: Category }) => {
+    const [openDeleteModal, setOpenDeleteModal] = useState(false)
     const { colorScheme } = useColorScheme();
     const router = useRouter()
     const isDark = colorScheme === 'dark';
+    const { mutate: deleteCategory, isPending, isError, error } = useDeleteCategory()
     const { data: courseCount } = useQuery({
         queryKey: ['courses', item.id],
         queryFn: () => getCourseByCategoryCount(item.id),
     })
+
+    const handleDeleteCategory = () => {
+        Alert.alert(
+            'Delete Category',
+            'Are you sure you want to delete this category?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => deleteCategory(item.id),
+                },
+            ]
+        )
+    }
 
     return (
         <TouchableOpacity
@@ -32,16 +55,22 @@ const CategoryCard = ({ item }: { item: Category }) => {
             }}
             onPress={() => router.push(`/category/${item.id}`)}
         >
-            <View className="flex-row justify-between items-start">
+            <View className="flex-row justify-between items-center">
                 <View
                     className="p-3 rounded-xl justify-center items-center"
                     style={{ backgroundColor: item.color + '15' }}
                 >
                     <Feather name={(item.icon || 'grid') as any} size={24} color={item.color} />
                 </View>
-                <TouchableOpacity>
-                    <Feather name="more-horizontal" size={20} color={isDark ? "#94a3b8" : "#cbd5e1"} />
-                </TouchableOpacity>
+                <View className="flex flex-row gap-3">
+                    <TouchableOpacity onPress={handleDeleteCategory}>
+                        <Feather name={"trash"} size={18} color={item.color} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => router.push(`/category/${item.id}`)}>
+                        <Feather name={"edit-2"} size={18} color={item.color} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View>

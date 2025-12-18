@@ -60,17 +60,6 @@ export const createCourse = async (courseData: AddCourse) => {
     }
 }
 
-export const createCategory = async (categoryData: { name: string, color: string, icon: string }) => {
-    try {
-        const newCategory = await addCategory(categoryData.name, categoryData.color, categoryData.icon)
-        return newCategory
-    } catch (error) {
-        if (error instanceof Error) {
-            throw new Error('Failed to add category', error)
-        }
-        throw new Error('Unknown error')
-    }
-}
 
 // export const createCategoryCourse = async (courseId: number, categoryId: number) => {
 //     try {

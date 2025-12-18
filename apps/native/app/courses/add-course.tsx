@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import RNPickerSelect from 'react-native-picker-select';
 import { useColorScheme } from "@/lib/use-color-scheme";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchCategories } from "@/lib/api/courses.api";
 import { useAddCourse } from "@/lib/query/courses.query";
 
@@ -19,7 +19,7 @@ const addCourseSchema = z.object({
 })
 
 const AddCourse = () => {
-    const { data: categories, isLoading, isError, error } = useQuery({
+    const { data: categories } = useSuspenseQuery({
         queryKey: ['categories'],
         queryFn: fetchCategories,
         staleTime: Infinity,
@@ -34,11 +34,11 @@ const AddCourse = () => {
             title: '',
             link: '',
             description: '',
-            category: 0,
+            category: categories?.[0].id || 0,
             status: 'not-started' as "not-started" | "in-progress" | "completed",
         },
         validators: {
-            onChange: addCourseSchema
+            onSubmit: addCourseSchema
         },
         onSubmit: ({ value }) => {
             addCourse(value);
@@ -49,7 +49,7 @@ const AddCourse = () => {
         }
     })
 
-    if (isLoading) {
+    if (isPending) {
         return (
             <View className="flex-1 justify-center items-center bg-background">
                 <Text className="text-muted-foreground">Loading...</Text>
@@ -153,9 +153,9 @@ const AddCourse = () => {
                                                 onValueChange={field.handleChange}
                                                 value={field.state.value}
                                                 items={categories?.map((category) => ({
-                                                    label: category.name,
-                                                    value: category.id,
-                                                }))}
+                                                    label: category?.name,
+                                                    value: category?.id,
+                                                })) || []}
                                                 style={{
                                                     inputIOS: {
                                                         fontSize: 16,
@@ -176,7 +176,7 @@ const AddCourse = () => {
                                                         paddingRight: 30,
                                                     },
                                                     placeholder: {
-                                                        color: "#fff",
+                                                        color: "#000",
                                                     },
                                                     iconContainer: {
                                                         top: 15,
@@ -184,7 +184,7 @@ const AddCourse = () => {
                                                     }
                                                 }}
                                                 useNativeAndroidPickerStyle={false}
-                                                placeholder={{}}
+                                                placeholder={categories?.length ? { label: "no category", value: "" } : { label: "no category", value: "0" }}
                                             />
                                         </View>
                                         {field.state.meta.errors.length > 0 ? (
@@ -217,7 +217,7 @@ const AddCourse = () => {
                                         </Text>
                                     ) : (
                                         <>
-                                            <Feather name="plus-circle" size={20} color={!canSubmit ? (isDark ? '#64748b' : '#94a3b8') : (isDark ? '#fff' : '#fff')} style={{ marginRight: 8 }} />
+                                            <Feather name="plus-circle" size={20} color={!canSubmit ? (isDark ? '#64748b' : '#94a3b8') : (isDark ? '#fff' : '#000   ')} style={{ marginRight: 8 }} />
                                             <Text className={`font-bold text-lg ${!canSubmit ? 'text-slate-400 dark:text-slate-500' : 'text-primary-foreground dark:text-black'}`}>
                                                 Create Course
                                             </Text>

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useColorScheme } from "@/lib/use-color-scheme";
-import { useAddCategory } from "@/lib/query/courses.query";
+import { useAddCategory } from "@/lib/query/categories.query";
 
 const COLORS = [
     "#3b82f6", // Blue
@@ -165,7 +165,7 @@ const AddCategory = () => {
                                     onPress={form.handleSubmit}
                                     className={`w-full py-4 rounded-2xl flex-row justify-center items-center ${!canSubmit
                                         ? 'bg-slate-200 dark:bg-slate-800 opacity-50 shadow-none'
-                                        : 'bg-primary bg-slate-900 dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none'
+                                        : 'bg-primary dark:bg-slate-100 shadow-xl shadow-slate-300 dark:shadow-none'
                                         }`}
                                 >
                                     {isSubmitting ? (
@@ -174,7 +174,7 @@ const AddCategory = () => {
                                         </Text>
                                     ) : (
                                         <>
-                                            <Feather name="plus-circle" size={20} color={!canSubmit ? (isDark ? '#64748b' : '#94a3b8') : (isDark ? '#000' : '#fff')} style={{ marginRight: 8 }} />
+                                            <Feather name="plus-circle" size={20} color={!canSubmit ? (isDark ? '#64748b' : '#94a3b8') : (isDark ? '#fff' : '#000')} style={{ marginRight: 8 }} />
                                             <Text className={`font-bold text-lg ${!canSubmit ? 'text-slate-400 dark:text-slate-500' : 'text-primary-foreground dark:text-black'}`}>
                                                 Create Category
                                             </Text>

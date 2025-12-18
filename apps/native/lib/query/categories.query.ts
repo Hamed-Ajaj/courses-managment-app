@@ -1,34 +1,26 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createCourse, removeCourse } from "../api/courses.api"
+import { createCategory, removeCategory } from "../api/categories.api"
 
-export const useAddCourse = () => {
+export const useAddCategory = () => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: createCourse,
+        mutationFn: createCategory,
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['courses'],
-            })
-        }
-    })
-}
-
-
-export const useDeleteCourse = () => {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: removeCourse,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['courses'],
-            });
             queryClient.invalidateQueries({
                 queryKey: ['categories'],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ['category']
             })
         }
     })
 }
 
+export const useDeleteCategory = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: removeCategory,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['categories'],
+            })
+        }
+    })
+}
