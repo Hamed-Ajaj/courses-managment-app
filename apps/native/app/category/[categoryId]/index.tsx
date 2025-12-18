@@ -53,7 +53,7 @@ const CategoryDetails = () => {
             </View>
 
             {/* Floating Add Button Area */}
-            <FloatingAddBtn>Add new course</FloatingAddBtn>
+            <FloatingAddBtn url="/courses/add-course">Add new course</FloatingAddBtn>
         </SafeAreaView>
     )
 }

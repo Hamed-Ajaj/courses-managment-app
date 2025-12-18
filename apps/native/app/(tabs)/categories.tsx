@@ -59,7 +59,7 @@ const CategoriesScreen = () => {
       </View>
 
       {/* Floating Add Button */}
-      <FloatingAddBtn>Add New Category</FloatingAddBtn>
+      <FloatingAddBtn url="/category/add-category">Add New Category</FloatingAddBtn>
     </SafeAreaView>
   );
 }

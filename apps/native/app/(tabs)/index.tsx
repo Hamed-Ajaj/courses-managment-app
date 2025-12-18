@@ -251,7 +251,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Floating Add Button Area */}
-      <FloatingAddBtn>Add New Course</FloatingAddBtn>
+      <FloatingAddBtn url="/courses/add-course">Add New Course</FloatingAddBtn>
     </SafeAreaView>
   )
 }

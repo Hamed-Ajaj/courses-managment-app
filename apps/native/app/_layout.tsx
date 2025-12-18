@@ -65,7 +65,7 @@ export default function RootLayout() {
 					<Stack.Screen name="courses/[courseId]/index" options={{ headerShown: true, title: "Course Details" }} />
 					<Stack.Screen name="courses/add-course" options={{ headerShown: true, title: "Add New Course" }} />
 					<Stack.Screen name="category/add-category" options={{ headerShown: true, title: "Add New Category" }} />
-					<Stack.Screen name="category/[categoryId]/index" options={{ headerShown: true, title: "Category Details" }} />
+					<Stack.Screen name="category/[categoryId]/index" options={{ headerShown: true, title: "Category Courses" }} />
 				</Stack>
 			</GestureHandlerRootView>
 		</QueryClientProvider>
